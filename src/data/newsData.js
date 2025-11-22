@@ -18,15 +18,15 @@ export const newsItems = [
   {
     id: 2,
     title: 'Innovation Award Ceremony',
-    date: 'November 02, 2024',
+    date: 'November 12, 2025',
     category: 'Awards',
-    summary: 'We are proud to announce that Atexco has been awarded the "Best Industrial Printer" award for the Vega Series at the International Expo.',
+    summary: 'We are proud to announce that China Textile Company has been awarded the "Best Industrial Printer" award for the Vega Series at the International Expo.',
     imageUrl: summit2, 
   },
   {
     id: 3,
     title: 'Strategic Partners Meeting',
-    date: 'December 10, 2024',
+    date: 'December 10, 2025',
     category: 'Strategy',
     summary: 'Top industry leaders gathered to discuss the roadmap for digital textile printing in Bangladesh for the upcoming fiscal year.',
     imageUrl: summit3, 
@@ -34,9 +34,9 @@ export const newsItems = [
   {
     id: 4,
     title: 'Green Technology Workshop',
-    date: 'January 05, 2025',
+    date: 'December 05, 2025',
     category: 'Workshop',
-    summary: 'Our technical team led a workshop on how to reduce water consumption and carbon footprint using Atexco\'s new pigment ink solutions.',
+    summary: 'Our technical team led a workshop on how to reduce water consumption and carbon footprint using Chinese\'s new pigment ink solutions.',
     imageUrl: summit4, 
   },
 ];

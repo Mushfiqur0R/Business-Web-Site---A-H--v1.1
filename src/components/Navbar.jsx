@@ -45,7 +45,7 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Menu - Using NavLink and Tailwind's responsive classes */}
+          {/* Desktop Menu - Unchanged as per your request */}
           <nav className="desktop-menu">
             <NavLink to="/" className={({isActive}) => isActive ? activeLinkClasses : navLinkClasses}>HOME</NavLink>
             <NavLink to="/about" className={({isActive}) => isActive ? activeLinkClasses : navLinkClasses}>ABOUT US</NavLink>
@@ -66,15 +66,20 @@ const Navbar = () => {
         </div>
       </div>
       
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu Dropdown - Updated to include all links */}
       {isOpen && (
         <div className="mobile-menu-dropdown bg-black bg-opacity-90 backdrop-blur-md">
           <div className="px-4 pt-2 pb-4 space-y-2">
             <NavLink to="/" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" onClick={() => setIsOpen(false)}>HOME</NavLink>
             <NavLink to="/about" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" onClick={() => setIsOpen(false)}>ABOUT US</NavLink>
+            
+            {/* Added Missing Links for Mobile */}
             <NavLink to="/textile" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" onClick={() => setIsOpen(false)}>PRODUCTS</NavLink>
+            <NavLink to="/textile" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" onClick={() => setIsOpen(false)}>TEXTILE</NavLink>
+            <NavLink to="/packaging" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" onClick={() => setIsOpen(false)}>PACKAGING</NavLink>
+            <NavLink to="/news" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" onClick={() => setIsOpen(false)}>NEWS</NavLink>
+            
             <NavLink to="/contact" className="block px-3 py-2 rounded-md text-base font-medium hover:bg-gray-700" onClick={() => setIsOpen(false)}>CONTACT US</NavLink>
-            {/* আপনি চাইলে এখানে আরও লিঙ্ক যোগ করতে পারেন */}
           </div>
         </div>
       )}

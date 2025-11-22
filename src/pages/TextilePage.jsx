@@ -9,32 +9,42 @@ const TextilePage = () => {
   return (
     <div className="bg-white min-h-screen">
       
-      {/* 1. VIDEO BANNER SECTION (Unchanged) */}
-      <div className="relative h-[50vh] md:h-[60vh] w-full overflow-hidden bg-black">
+      {/* -----------------------------------------------------------
+          1. VIDEO BANNER SECTION (FIXED)
+      ------------------------------------------------------------ */}
+      <div className="relative h-[60vh] w-full bg-black overflow-hidden">
+        
+        {/* Video Element - Fixed CSS */}
         <video
           autoPlay
           loop
           muted
           playsInline
           src={heroVideo}
-          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto -translate-x-1/2 -translate-y-1/2 object-cover opacity-50"
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
         >
           Your browser does not support the video tag.
         </video>
         
+        {/* Optional: Extra Dark Overlay for better text visibility */}
+        <div className="absolute inset-0 bg-black/20"></div>
+
+        {/* Content Overlay */}
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-center text-white px-4">
-          <h1 className="text-4xl md:text-7xl font-bold font-serif tracking-wider mb-4">
+          <h1 className="text-5xl md:text-8xl font-bold font-serif tracking-wider mb-6">
             TEXTILE
           </h1>
-          <div className="h-1 w-20 bg-blue-500 mb-4"></div>
-          <p className="text-sm md:text-xl font-light tracking-[0.2em] uppercase max-w-2xl">
+          <div className="h-1 w-24 bg-blue-500 mb-6"></div>
+          <p className="text-lg md:text-2xl font-light tracking-[0.2em] uppercase max-w-3xl leading-relaxed">
             High Speed Industrial Digital Textile Printer
           </p>
         </div>
       </div>
 
-      {/* 2. SERIES SECTIONS LOOP */}
-      <div className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-32">
+      {/* -----------------------------------------------------------
+          2. SERIES SECTIONS LOOP
+      ------------------------------------------------------------ */}
+      <div className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-32">
         
         {textileSeries.map((series, index) => (
           <div key={index} className="relative">
@@ -49,7 +59,7 @@ const TextilePage = () => {
               </p>
             </div>
 
-            {/* --- CUSTOM RAW CSS GRID APPLIED HERE --- */}
+            {/* Custom CSS Grid for 2 Columns */}
             <div className="atexco-product-grid">
               {series.products.map((product) => (
                 <Link 
