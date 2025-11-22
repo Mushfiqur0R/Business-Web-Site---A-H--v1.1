@@ -1,0 +1,136 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+.custom-cursor-area:hover {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></svg>'), auto;
+}
+
+/* src/index.css */
+
+/* --- Custom CSS Grid for Product Preview --- */
+
+.product-grid {
+  display: grid;
+  gap: 2rem; /* Corresponds to Tailwind's gap-8 */
+  
+  /* Default: 1 column for mobile */
+  grid-template-columns: 1fr;
+}
+
+/* Medium screens and up (e.g., tablets) */
+@media (min-width: 768px) {
+  .product-grid {
+    /* 2 columns */
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Large screens and up (e.g., desktops) */
+@media (min-width: 1024px) {
+  .product-grid {
+    /* 3 columns */
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Optional: Ensure the grid item itself doesn't have conflicting styles */
+.product-grid-item {
+  width: 100%; /* Ensure it takes the full width of its grid cell */
+}
+
+/* --- Custom CSS for Hero Background Video --- */
+
+.hero-background-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  
+  /* 
+    This is the most important property. 
+    It ensures the video covers the entire container without distortion.
+  */
+  object-fit: cover;
+  
+  transform: translate(-50%, -50%);
+  
+  /* 
+    Send the video to the very back, behind all other content.
+  */
+  z-index: -1;
+}
+
+/* Default styles (Mobile First) */
+.desktop-menu {
+  display: none; /* Hide desktop menu on mobile */
+}
+
+.mobile-menu-button {
+  display: block; /* Show hamburger button on mobile */
+}
+
+/* 
+  Breakpoint for medium screens and up (e.g., tablets and desktops)
+  768px is Tailwind's default 'md' breakpoint.
+*/
+@media (min-width: 768px) {
+  .desktop-menu {
+    display: flex; /* Show desktop menu */
+    align-items: center;
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500;  /* font-medium */
+    gap: 1.5rem; /* space-x-6 (use gap instead of space-x for flex) */
+  }
+
+  .mobile-menu-button {
+    display: none; /* Hide hamburger button on desktop */
+  }
+
+  .mobile-menu-dropdown {
+    display: none !important; /* Force hide dropdown on desktop */
+  }
+}
+
+/* Re-add Tailwind styles that were inside the className */
+.desktop-menu a, .desktop-menu button {
+  color: white;
+  transition: color 0.3s;
+}
+
+.desktop-menu a:hover, .desktop-menu button:hover {
+  color: #9ca3af; /* text-gray-300 */
+}
+
+.text-outline {
+  -webkit-text-stroke: 1px #4b5563; /* Gray-600 color border */
+  color: transparent;
+  font-family: sans-serif; /* বা আপনার পছন্দমত ফন্ট */
+}
+
+/* Hover করলে ফিল হয়ে যাবে (অপশনাল) */
+.group:hover .text-outline-hover {
+  -webkit-text-stroke: 0px;
+  color: #2563eb; /* Blue-600 */
+  transition: all 0.5s ease;
+}
+
+.atexco-product-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Mobile: 1 column */
+  gap: 2rem; /* Gap between items */
+  width: 100%;
+}
+
+/* For Tablet and Desktop (min-width: 768px) */
+@media (min-width: 768px) {
+  .atexco-product-grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* Force 2 columns */
+    column-gap: 3rem; /* Horizontal gap */
+    row-gap: 4rem;    /* Vertical gap */
+  }
+}
