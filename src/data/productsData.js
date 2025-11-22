@@ -213,7 +213,7 @@ export const allProducts = [
   },
   {
     id: 9,
-    name: 'VegaPress',
+    name: 'A2iPress',
     output: 'Commercial Printing',
     category: 'Printer',
     imageUrl: vegapress,
