@@ -121,7 +121,7 @@ export const textileSeries = [
     products: [
       { 
         id: 201, 
-        name: 'Model X Plus', 
+        name: 'Model Dolphin Plus', 
         output: 'Daily Output: 3000-5000m', 
         imageUrl: modelXPlus,
         category: 'Textile'
