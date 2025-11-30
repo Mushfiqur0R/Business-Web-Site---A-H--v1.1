@@ -1,9 +1,31 @@
 // src/pages/NewsPage.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { newsItems } from '../data/newsData';
+import { db } from '../firebase'; // Import Firebase
+import { collection, getDocs } from 'firebase/firestore';
 
 const NewsPage = () => {
+  const [newsItems, setNewsItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // --- Fetch News form Database ---
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "news"));
+        const list = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setNewsItems(list);
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      }
+      setLoading(false);
+    };
+    fetchNews();
+  }, []);
+
   return (
     <div className="bg-gray-50 min-h-screen">
       
@@ -17,43 +39,51 @@ const NewsPage = () => {
 
       {/* News Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {newsItems.map((item) => (
-            <Link 
-              to={`/news/${item.id}`} 
-              key={item.id} 
-              className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col"
-            >
-              {/* Image */}
-              <div className="h-60 overflow-hidden relative">
-                <div 
-                   className="w-full h-full bg-cover transition-transform duration-700 hover:scale-110"
-                   style={{ 
-                     backgroundImage: `url(${item.imageUrl})`,
-                     backgroundPosition: '50% 20%' // Consistent positioning
-                   }}
-                ></div>
-                <div className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">
-                  {item.category}
+        
+        {loading ? (
+          <div className="text-center py-20 text-gray-500">Loading News...</div>
+        ) : newsItems.length === 0 ? (
+          <div className="text-center py-20 text-gray-500">No news articles found.</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {newsItems.map((item) => (
+              <Link 
+                to={`/news/${item.id}`} 
+                key={item.id} 
+                className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col"
+              >
+                {/* Image */}
+                <div className="h-60 overflow-hidden relative">
+                  <div 
+                     className="w-full h-full bg-cover transition-transform duration-700 hover:scale-110"
+                     style={{ 
+                       backgroundImage: `url(${item.imageUrl})`,
+                       backgroundPosition: '50% 20%' 
+                     }}
+                  ></div>
+                  <div className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">
+                    {item.category}
+                  </div>
                 </div>
-              </div>
 
-              {/* Content */}
-              <div className="p-6 flex flex-col flex-grow">
-                <p className="text-sm text-gray-500 mb-2">{item.date}</p>
-                <h3 className="text-xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors">
-                  {item.title}
-                </h3>
-                <p className="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow">
-                  {item.summary}
-                </p>
-                <div className="text-blue-600 font-semibold text-sm flex items-center mt-auto">
-                  Read More <span className="ml-2">→</span>
+                {/* Content */}
+                <div className="p-6 flex flex-col flex-grow">
+                  <p className="text-sm text-gray-500 mb-2">{item.date}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 hover:text-blue-600 transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm line-clamp-3 mb-4 flex-grow">
+                    {item.summary}
+                  </p>
+                  <div className="text-blue-600 font-semibold text-sm flex items-center mt-auto">
+                    Read More <span className="ml-2">→</span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
       </div>
     </div>
   );
