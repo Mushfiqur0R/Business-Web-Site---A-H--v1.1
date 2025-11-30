@@ -1,7 +1,41 @@
 // src/components/Footer.jsx
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 const Footer = () => {
+  // Default values set to your provided info
+  const [contactInfo, setContactInfo] = useState({
+    email: 'service@aandhenterprise.com',
+    phone1: '+880 1727-200035',
+    phone2: '+880 1794-275382',
+    address: '28 Babupura (1st floor), Katabon, Dhaka-1205, Bangladesh'
+  });
+
+  // Fetch updated contact info from Firestore
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const docRef = doc(db, "settings", "contact");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          // Only update if data exists, otherwise keep default
+          setContactInfo({
+            email: data.email || 'service@aandhenterprise.com',
+            phone1: data.phone1 || '+880 1727-200035',
+            phone2: data.phone2 || '+880 1794-275382',
+            address: data.address || '28 Babupura (1st floor), Katabon, Dhaka-1205, Bangladesh'
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching contact info:", err);
+      }
+    };
+    fetchContact();
+  }, []);
+
   const LocationIcon = (
     <svg className="w-5 h-5 mr-3 text-blue-500 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
@@ -54,7 +88,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact Info (Dynamic) */}
           <div>
             <h3 className="text-lg font-bold tracking-wider uppercase text-white mb-6 border-b-2 border-blue-500 inline-block pb-1">
               Contact Us
@@ -62,19 +96,17 @@ const Footer = () => {
             <ul className="space-y-4 text-gray-400 text-sm">
               <li className="flex items-start">
                 {LocationIcon}
-                <span>28 Babupura (1st floor), Katabon, Dhaka-1205, Bangladesh</span>
+                <span className="whitespace-pre-line">{contactInfo.address}</span>
               </li>
               <li className="flex items-center">
                 {EmailIcon}
-                {/* --- UPDATED EMAIL --- */}
-                <a href="mailto:service@aandhenterprise.com" className="hover:text-blue-400 transition duration-300">service@aandhenterprise.com</a>
+                <a href={`mailto:${contactInfo.email}`} className="hover:text-blue-400 transition duration-300">{contactInfo.email}</a>
               </li>
               <li className="flex items-start">
                 {PhoneIcon}
-                {/* --- UPDATED PHONES --- */}
                 <div className="flex flex-col">
-                  <a href="tel:+8801727200035" className="hover:text-blue-400 transition duration-300 mb-1">+880 1727-200035</a>
-                  <a href="tel:+8801794275382" className="hover:text-blue-400 transition duration-300">+880 1794-275382</a>
+                  {contactInfo.phone1 && <a href={`tel:${contactInfo.phone1}`} className="hover:text-blue-400 transition duration-300 mb-1">{contactInfo.phone1}</a>}
+                  {contactInfo.phone2 && <a href={`tel:${contactInfo.phone2}`} className="hover:text-blue-400 transition duration-300">{contactInfo.phone2}</a>}
                 </div>
               </li>
             </ul>

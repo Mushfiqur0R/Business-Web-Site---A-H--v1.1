@@ -5,7 +5,7 @@ import { newsItems } from '../data/newsData';
 
 const NewsPage = () => {
   return (
-    <div className="bg-gray-50 min-h-screen pt-20">
+    <div className="bg-gray-50 min-h-screen">
       
       {/* Header Banner */}
       <div className="bg-gray-900 text-white py-16 text-center">

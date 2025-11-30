@@ -1,9 +1,11 @@
 // src/pages/ProductDetailPage.jsx
-import React from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { allProducts } from '../data/productsData';
+import React, { useEffect, useState } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { FaArrowLeft } from 'react-icons/fa';
 
-// আইকন কম্পোনেন্ট (ছোট করার জন্য এখানে রাখা হলো)
+// আইকন কম্পোনেন্ট
 const icons = {
   printing: <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>,
   color: <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.486H7v-4.485l4-4z"></path></svg>,
@@ -13,69 +15,97 @@ const icons = {
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
-  
-  // URL থেকে প্রোডাক্ট খুঁজে বের করা
-  const product = allProducts.find(
-    p => p.name.toLowerCase().replace(/\s+/g, '-') === productId
-  );
+  const navigate = useNavigate();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const docRef = doc(db, "products", productId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setProduct({ id: docSnap.id, ...docSnap.data() });
+        } else {
+          console.log("No such product!");
+        }
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      }
+      setLoading(false);
+    };
+
+    fetchProduct();
+  }, [productId]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <p className="text-xl font-semibold text-gray-500 animate-pulse">Loading Product Details...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
         <h2 className="text-4xl font-bold text-gray-800 mb-4">Product Not Found</h2>
-        <Link to="/textile" className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700">Back to Products</Link>
+        <button onClick={() => navigate(-1)} className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+          Go Back
+        </button>
       </div>
     );
   }
 
-  // ডিফল্ট ডাটা (যদি ডাটা ফাইলে features/specs না থাকে)
-  const features = product.features || [
-    { title: "24/7 Printing", desc: product.output },
-    { title: "Vivid Color", desc: "High precision color matching" },
-    { title: "Industrial Build", desc: "Designed for heavy production" },
-    { title: "Smart System", desc: "Advanced operational software" },
+  const features = product.features && product.features.length > 0 ? product.features : [
+    { title: "High Performance", desc: product.output || "Industrial Standard Output" },
+    { title: "Vivid Color", desc: "High precision color matching technology" },
+    { title: "Robust Build", desc: "Designed for 24/7 industrial operation" },
+    { title: "Smart System", desc: "Advanced RIP software integration" },
   ];
 
   const specs = product.specifications || {};
 
   return (
-    <div className="bg-white">
+    <div className="bg-white min-h-screen">
       
       {/* ------------------------------------------------
-         1. PRODUCT BANNER (FIXED: Dark & Mobile Zoom)
+         1. PRODUCT BANNER
       ------------------------------------------------ */}
-      <div className="relative pt-20 pb-12 md:pt-32 md:pb-20 bg-gradient-to-b from-[#0f0f0f] via-[#1a1a1a] to-[#252525] text-white overflow-hidden">
-        
-        {/* Background Texture/Effect */}
+      <div className="relative pt-24 pb-16 md:pt-32 md:pb-24 bg-gradient-to-b from-[#0f0f0f] via-[#1a1a1a] to-[#252525] text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+        
+        {/* Back Button */}
+        <div className="absolute top-24 left-4 md:left-10 z-20">
+           <button 
+             onClick={() => navigate(-1)}
+             className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors font-medium"
+           >
+             <FaArrowLeft /> Back
+           </button>
+        </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex flex-col items-center text-center">
-            
-            {/* Title Section */}
-            <p className="text-blue-400 font-bold tracking-widest uppercase mb-2 animate-fade-in-down">
+            <p className="text-blue-400 font-bold tracking-widest uppercase mb-3 text-sm md:text-base animate-fade-in-down">
               {product.category} Series
             </p>
-            <h1 className="text-4xl md:text-6xl font-bold mb-8 animate-fade-in-up">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 animate-fade-in-up">
               {product.name}
             </h1>
-
-            {/* Image Section (Fixed Object-Contain) */}
-            <div className="relative w-full h-[40vh] md:h-[500px] flex items-center justify-center my-8">
-              {/* Glow Behind */}
-              <div className="absolute w-64 h-64 bg-blue-500/20 rounded-full blur-[80px]"></div>
-              
-              {/* Product Image */}
+            
+            <div className="relative w-full h-[300px] md:h-[500px] flex items-center justify-center my-6">
+              <div className="absolute w-64 h-64 bg-blue-600/20 rounded-full blur-[80px] animate-pulse-slow"></div>
               <img 
                 src={product.imageUrl} 
                 alt={product.name} 
-                // object-contain: ensures full image visibility without crop
                 className="relative z-10 w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
               />
             </div>
 
-            <div className="mt-8">
-               <Link to="/contact" className="px-8 py-3 border border-white rounded-full text-white font-semibold hover:bg-white hover:text-black transition-all duration-300">
+            <div className="mt-10">
+               <Link to="/contact" className="px-10 py-4 border border-white rounded-full text-white font-bold tracking-wide hover:bg-white hover:text-black transition-all duration-300">
                  Request a Quote
                </Link>
             </div>
@@ -84,21 +114,21 @@ const ProductDetailPage = () => {
       </div>
 
       {/* ------------------------------------------------
-         2. FEATURES GRID (Atexco Style)
+         2. FEATURES GRID
       ------------------------------------------------ */}
       <div className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800">Key Features</h2>
+            <div className="h-1 w-20 bg-blue-600 mx-auto mt-4 rounded-full"></div>
             <p className="text-gray-500 mt-4 max-w-2xl mx-auto">Designed for industrial reliability, speed, and precision.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, idx) => (
-              <div key={idx} className="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100 group">
+              <div key={idx} className="bg-white p-8 rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group transform hover:-translate-y-1">
                 <div className="text-blue-600 mb-6 group-hover:scale-110 transition-transform duration-300">
-                  {/* Rotating icons based on index */}
-                  {idx === 0 ? icons.printing : idx === 1 ? icons.color : idx === 2 ? icons.motor : icons.system}
+                  {idx % 4 === 0 ? icons.printing : idx % 4 === 1 ? icons.color : idx % 4 === 2 ? icons.motor : icons.system}
                 </div>
                 <h3 className="text-xl font-bold text-gray-800 mb-2">{feature.title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{feature.desc}</p>
@@ -109,84 +139,61 @@ const ProductDetailPage = () => {
       </div>
 
       {/* ------------------------------------------------
-         3. SPECIFICATION TABLE (Detailed & Professional)
+         3. SPECIFICATION TABLE
       ------------------------------------------------ */}
-      <div className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="py-24 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{product.name} Specifications</h2>
-            <div className="h-1 w-20 bg-blue-600 mx-auto"></div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Technical Specifications</h2>
+            <p className="text-gray-500">Detailed parameters for {product.name}</p>
           </div>
 
           {Object.keys(specs).length > 0 ? (
-            <div className="overflow-x-auto border border-gray-200 rounded-lg shadow-lg">
+            <div className="overflow-hidden border border-gray-200 rounded-xl shadow-lg">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider w-1/3">
+                    <th scope="col" className="px-6 py-5 text-left text-sm font-bold text-gray-700 uppercase tracking-wider w-1/3 border-r border-gray-200">
                       Parameter
                     </th>
-                    <th scope="col" className="px-6 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+                    <th scope="col" className="px-6 py-5 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
                       Details
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {/* Model */}
-                  <tr>
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-600">Model</td>
-                    <td className="px-6 py-4 text-sm text-gray-900 font-medium">{specs.model || product.name}</td>
-                  </tr>
-                  {/* Print Heads */}
-                  <tr className="bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-600">Print Heads</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{specs.printHead || "N/A"}</td>
-                  </tr>
-                  {/* Width */}
-                  <tr>
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-600">Max Printing Width</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{specs.width || "N/A"}</td>
-                  </tr>
-                  {/* Speed (Complex Row) */}
-                  <tr className="bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-600 align-top pt-6">Printing Speed</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      {specs.speed ? (
-                        <div className="space-y-1">
-                          <p><span className="font-semibold text-gray-500">Mode 1:</span> {specs.speed.pass1}</p>
-                          <p><span className="font-semibold text-gray-500">Mode 2:</span> {specs.speed.pass2}</p>
-                          <p><span className="font-semibold text-gray-500">Mode 3:</span> {specs.speed.pass3}</p>
-                        </div>
-                      ) : "N/A"}
-                    </td>
-                  </tr>
-                  {/* Ink */}
-                  <tr>
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-600">Ink Configuration</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                      <p>Type: {specs.inkType || "N/A"}</p>
-                      <p>Colors: {specs.colors || "N/A"}</p>
-                    </td>
-                  </tr>
-                  {/* Software */}
-                  <tr className="bg-gray-50">
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-600">RIP Software</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">{specs.software || "N/A"}</td>
-                  </tr>
-                   {/* Dimensions */}
-                   <tr>
-                    <td className="px-6 py-4 text-sm font-semibold text-gray-600">Dimensions & Weight</td>
-                    <td className="px-6 py-4 text-sm text-gray-900">
-                       <p>Size: {specs.dimensions || "N/A"}</p>
-                       <p>Weight: {specs.weight || "N/A"}</p>
-                    </td>
-                  </tr>
+                  {Object.entries(specs).map(([key, value], idx) => {
+                    // Skip empty values
+                    if (!value || (typeof value === 'object' && Object.values(value).every(v => !v))) return null;
+                    
+                    return (
+                      <tr key={idx} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="px-6 py-4 text-sm font-semibold text-gray-600 capitalize border-r border-gray-200">
+                          {key.replace(/([A-Z])/g, ' $1').trim()} 
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-800">
+                          {typeof value === 'object' ? (
+                            <div className="space-y-1">
+                              {Object.entries(value).map(([subKey, subVal]) => 
+                                subVal ? (
+                                  <p key={subKey}><span className="font-medium text-gray-500 capitalize">{subKey}:</span> {subVal}</p>
+                                ) : null
+                              )}
+                            </div>
+                          ) : (
+                            value
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
           ) : (
-            <div className="text-center py-10 bg-gray-50 rounded border border-dashed border-gray-300">
-              <p className="text-gray-500">Detailed specifications are coming soon.</p>
+            <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+              <p className="text-gray-500 text-lg">Full technical specifications will be updated soon.</p>
+              <p className="text-sm text-gray-400 mt-2">Contact us for the datasheet.</p>
             </div>
           )}
         </div>

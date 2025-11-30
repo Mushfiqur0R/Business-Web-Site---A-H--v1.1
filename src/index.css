@@ -176,3 +176,153 @@
   stroke-dashoffset: 48;
   animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
 }
+
+/* --- Admin Layout Fixes --- */
+.admin-wrapper {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+.admin-sidebar {
+  width: 256px; /* w-64 */
+  background-color: #111827; /* gray-900 */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease-in-out;
+  z-index: 50;
+}
+
+/* Mobile View (Default): Sidebar is fixed and hidden */
+@media (max-width: 1023px) {
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%); /* Hide sidebar */
+  }
+  
+  /* Class to show sidebar on mobile */
+  .admin-sidebar.open {
+    transform: translateX(0); /* Show sidebar */
+  }
+}
+
+/* Desktop View (Large Screen): Sidebar is always visible and static */
+@media (min-width: 1024px) {
+  .admin-sidebar {
+    position: relative;
+    transform: none !important; /* Force show */
+    flex-shrink: 0; /* Prevent shrinking */
+  }
+}
+
+.admin-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Fix flex overflow issues */
+}
+
+/* --- Navbar Styles (Updated Fix) --- */
+
+.desktop-menu {
+  display: none;
+}
+
+.mobile-menu-button {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .desktop-menu {
+    display: flex;
+    align-items: center;
+    gap: 24px; /* Space increased slightly */
+  }
+
+  .mobile-menu-button {
+    display: none;
+  }
+}
+
+/* --- Dropdown Container --- */
+.nav-dropdown-container {
+  position: relative;
+  display: inline-block;
+  height: 100%;
+}
+
+/* --- Dropdown Menu (Design Fixed) --- */
+.nav-dropdown-menu {
+  position: absolute;
+  top: 100%; 
+  left: 0;
+  width: 240px; /* Width increased */
+  background-color: #2e2e2e; /* White Background */
+  border: 1px solid #d5d5d5; /* Light border */
+  border-radius: 8px;
+  box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.15); /* Soft Shadow */
+  padding: 8px 0;
+  z-index: 1000;
+  
+  /* Initial State (Hidden) */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Show State */
+.nav-dropdown-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* --- Dropdown Items --- */
+.dropdown-item {
+  display: block;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: #1f2937; /* Dark Gray Text (Almost Black) */
+  font-size: 14px;
+  font-weight: 600; /* Semi-bold */
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s ease-in-out;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #eff6ff; /* Light Blue Background */
+  color: #2563eb; /* Blue Text */
+  padding-left: 26px; /* Slide Effect */
+}
+
+/* Navigation Links */
+.nav-link {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: white; /* Navbar Text White */
+  text-decoration: none;
+  transition: color 0.3s;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  color: #93c5fd; /* Light Blue on hover */
+}
+
+.nav-link.active {
+  color: #60a5fa; /* Blue Active Color */
+}
+

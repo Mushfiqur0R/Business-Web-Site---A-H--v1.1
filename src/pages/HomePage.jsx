@@ -1,31 +1,65 @@
 // src/pages/HomePage.jsx
-
-// Step 1: Import all necessary components
+import React, { useEffect, useState } from 'react';
 import Hero from '../components/Hero';
 import ProductPreview from '../components/ProductPreview';
-import NewsSection from '../components/NewsSection'; // Ensure this line exists
+import NewsSection from '../components/NewsSection'; 
 import ContactForm from '../components/ContactForm';
-import { allProducts } from '../data/productsData';
+import { db } from '../firebase'; 
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 
 const HomePage = () => {
-  // Filter products for preview sections
-  const textileProducts = allProducts.filter(p => p.category === 'Textile').slice(0, 3);
-  const printerProducts = allProducts.filter(p => p.category === 'Printer').slice(0, 3);
-  const inkProducts = allProducts.filter(p => p.category === 'Ink').slice(0, 2);
+  const [homeProducts, setHomeProducts] = useState({
+    Textile: [],
+    Printer: [],
+    Ink: []
+  });
+
+  // --- ডাটাবেস থেকে হোম পেজের প্রোডাক্ট আনা ---
+  useEffect(() => {
+    const fetchHomeProducts = async () => {
+      try {
+        // Query: where showOnHome == true
+        const q = query(collection(db, "products"), where("showOnHome", "==", true));
+        const querySnapshot = await getDocs(q);
+        
+        const products = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // ক্যাটাগরি অনুযায়ী সাজানো
+        setHomeProducts({
+          Textile: products.filter(p => p.category === 'Textile').slice(0, 3),
+          Printer: products.filter(p => p.category === 'Printer').slice(0, 3),
+          Ink: products.filter(p => p.category === 'Ink').slice(0, 3),
+        });
+      } catch (error) {
+        console.error("Error fetching home products:", error);
+      }
+    };
+
+    fetchHomeProducts();
+  }, []);
 
   return (
     <>
       <Hero />
       <div className="bg-gray-50">
-        <ProductPreview category="Textile" products={textileProducts} />
-        <ProductPreview category="Printer" products={printerProducts} />
-        <ProductPreview category="Ink" products={inkProducts} />
+        {/* যদি প্রোডাক্ট থাকে তবেই সেকশন দেখাবে */}
+        {homeProducts.Textile.length > 0 && (
+          <ProductPreview category="Textile" products={homeProducts.Textile} />
+        )}
+        {homeProducts.Printer.length > 0 && (
+          <ProductPreview category="Printer" products={homeProducts.Printer} />
+        )}
+        {homeProducts.Ink.length > 0 && (
+          <ProductPreview category="Ink" products={homeProducts.Ink} />
+        )}
       </div>
       
-      {/* Step 2: Ensure the NewsSection component is rendered here */}
       <NewsSection />
-      <ContactForm />
-      
+      <div className="py-20 bg-white">
+         <div className="max-w-4xl mx-auto px-4">
+            <ContactForm />
+         </div>
+      </div>
     </>
   );
 };

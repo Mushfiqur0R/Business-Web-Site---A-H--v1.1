@@ -6,6 +6,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 
+
 // Step 2: Define the App component as a layout wrapper.
 function App() {
   return (

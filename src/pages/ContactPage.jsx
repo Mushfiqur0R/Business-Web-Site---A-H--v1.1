@@ -1,10 +1,42 @@
 // src/pages/ContactPage.jsx
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ContactForm from '../components/ContactForm';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 const ContactPage = () => {
+  // Default values
+  const [contactInfo, setContactInfo] = useState({
+    email: 'service@aandhenterprise.com',
+    phone1: '+880 1727-200035',
+    phone2: '+880 1794-275382',
+    address: '28 Babupura (1st floor), Katabon, Dhaka-1205, Bangladesh'
+  });
+
+  // Fetch updated contact info from Firestore
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const docRef = doc(db, "settings", "contact");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setContactInfo({
+            email: data.email || 'service@aandhenterprise.com',
+            phone1: data.phone1 || '+880 1727-200035',
+            phone2: data.phone2 || '+880 1794-275382',
+            address: data.address || '28 Babupura (1st floor), Katabon, Dhaka-1205, Bangladesh'
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching contact info:", err);
+      }
+    };
+    fetchContact();
+  }, []);
+
   return (
-    <div className="bg-gray-50 min-h-screen pt-20">
+    <div className="bg-gray-50 min-h-screen">
       
       {/* 1. Header with Pattern */}
       <div className="bg-gray-900 text-white py-24 text-center relative overflow-hidden">
@@ -38,7 +70,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900 text-lg">Office Address</h4>
-                  <p className="text-gray-600 mt-1">28 Babupura (1st floor), Katabon, <br/>Dhaka-1205, Bangladesh</p>
+                  <p className="text-gray-600 mt-1 whitespace-pre-line">{contactInfo.address}</p>
                 </div>
               </div>
 
@@ -49,7 +81,7 @@ const ContactPage = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900 text-lg">Email Us</h4>
-                  <a href="mailto:service@aandhenterprise.com" className="text-blue-600 hover:underline mt-1 block">service@aandhenterprise.com</a>
+                  <a href={`mailto:${contactInfo.email}`} className="text-blue-600 hover:underline mt-1 block">{contactInfo.email}</a>
                 </div>
               </div>
 
@@ -61,8 +93,8 @@ const ContactPage = () => {
                 <div>
                   <h4 className="font-bold text-gray-900 text-lg">Call Us</h4>
                   <div className="flex flex-col mt-1">
-                    <a href="tel:+8801727200035" className="text-blue-600 hover:underline font-medium">+880 1727-200035</a>
-                    <a href="tel:+8801794275382" className="text-blue-600 hover:underline font-medium">+880 1794-275382</a>
+                    {contactInfo.phone1 && <a href={`tel:${contactInfo.phone1}`} className="text-blue-600 hover:underline font-medium">{contactInfo.phone1}</a>}
+                    {contactInfo.phone2 && <a href={`tel:${contactInfo.phone2}`} className="text-blue-600 hover:underline font-medium">{contactInfo.phone2}</a>}
                   </div>
                 </div>
               </div>
